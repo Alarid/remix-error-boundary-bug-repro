@@ -5,8 +5,9 @@ import {
   Outlet,
   Link,
 } from "remix"
-import type { Joke } from "@prisma/client"
+import type { Joke, User } from "@prisma/client"
 import { db } from "~/utils/db.server"
+import { getUser, logout } from "~/utils/session.server"
 import stylesUrl from "~/styles/jokes.css"
 
 export let links: LinksFunction = () => {
@@ -20,14 +21,16 @@ export let links: LinksFunction = () => {
 
 type LoaderData = {
   jokes: Array<Pick<Joke, "id" | "name">>
+  user: User | null
 }
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
   const jokes = await db.joke.findMany({
     take: 5,
     select: { id: true, name: true },
     orderBy: { createdAt: "desc" },
   })
-  const data: LoaderData = { jokes }
+  const user = await getUser(request)
+  const data: LoaderData = { jokes, user }
   return data
 }
 
@@ -44,6 +47,20 @@ export default function JokesRoute() {
               <span className="logo-medium">J🤪KES</span>
             </Link>
           </h1>
+          {data.user ? (
+            <div className="user-info">
+              <span>Hi {data.user.username}</span>
+              <form action="/logout" method="POST">
+                <button type="submit" className="button">
+                  Logout
+                </button>
+              </form>
+            </div>
+          ) : (
+            <Link to="/login" className="button">
+              Login
+            </Link>
+          )}
         </div>
       </header>
       <main className="jokes-main">
@@ -54,7 +71,7 @@ export default function JokesRoute() {
             <ul>
               {data.jokes.map((joke) => (
                 <li key={joke.id}>
-                  <Link to={`/jokes/${joke.id}`}>{joke.name}</Link>
+                  <Link to={joke.id}>{joke.name}</Link>
                 </li>
               ))}
             </ul>
