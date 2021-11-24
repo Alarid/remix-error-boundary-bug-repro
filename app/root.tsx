@@ -1,5 +1,5 @@
 import type { LinksFunction } from "remix"
-import { Links, LiveReload, Outlet } from "remix"
+import { Links, LiveReload, Outlet, useCatch } from "remix"
 
 import globalStylesUrl from "./styles/global.css"
 import globalMediumStylesUrl from "./styles/global-medium.css"
@@ -61,6 +61,20 @@ export function ErrorBoundary({ error }: { error: Error }) {
       <div className="error-container">
         <h1>App Error</h1>
         <pre>{error.message}</pre>
+      </div>
+    </Document>
+  )
+}
+
+export function CatchBoundary() {
+  let caught = useCatch()
+
+  return (
+    <Document title={`${caught.status} ${caught.statusText}`}>
+      <div className="error-container">
+        <h1>
+          {caught.status} {caught.statusText}
+        </h1>
       </div>
     </Document>
   )

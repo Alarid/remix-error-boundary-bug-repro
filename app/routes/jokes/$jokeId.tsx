@@ -1,6 +1,6 @@
 import { Joke } from "@prisma/client"
 import { LoaderFunction } from "@remix-run/server-runtime"
-import { Link, useLoaderData, useParams } from "remix"
+import { Link, useCatch, useLoaderData, useParams } from "remix"
 import { db } from "~/utils/db.server"
 
 type LoaderData = {
@@ -8,7 +8,7 @@ type LoaderData = {
 }
 export const loader: LoaderFunction = async ({ params }) => {
   const joke = await db.joke.findUnique({ where: { id: params.jokeId } })
-  if (!joke) throw new Error("Joke not found")
+  if (!joke) throw new Response("Joke not found", { status: 404 })
   const data: LoaderData = { joke }
   return data
 }
@@ -31,4 +31,17 @@ export function ErrorBoundary({ error }: { error: Error }) {
       There was an error loading joke #{jokeId}, sorry.
     </div>
   )
+}
+
+export function CatchBoundary() {
+  let caught = useCatch()
+  const { jokeId } = useParams()
+
+  if (caught.status === 404) {
+    return (
+      <div className="error-container">Huh? What the heck is "{jokeId}" ?</div>
+    )
+  }
+
+  throw new Error(`Unhandled error: ${caught.status}`)
 }
