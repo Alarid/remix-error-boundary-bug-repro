@@ -38,26 +38,27 @@ type ActionData = {
 export let action: ActionFunction = async ({
   request,
 }): Promise<Response | ActionData> => {
-  const userId = await requireUserId(request, "/jokes/new")
+  throw new Error("Weird bug")
+  // const userId = await requireUserId(request, "/jokes/new")
 
-  let form = await request.formData()
-  let name = form.get("name")
-  let content = form.get("content")
-  if (typeof name !== "string" || typeof content !== "string") {
-    return { formError: `Form not submitted correctly.` }
-  }
+  // let form = await request.formData()
+  // let name = form.get("name")
+  // let content = form.get("content")
+  // if (typeof name !== "string" || typeof content !== "string") {
+  //   return { formError: `Form not submitted correctly.` }
+  // }
 
-  let fieldErrors = {
-    name: validateJokeName(name),
-    content: validateJokeContent(content),
-  }
-  let fields = { name, content }
-  if (Object.values(fieldErrors).some(Boolean)) {
-    return { fieldErrors, fields }
-  }
+  // let fieldErrors = {
+  //   name: validateJokeName(name),
+  //   content: validateJokeContent(content),
+  // }
+  // let fields = { name, content }
+  // if (Object.values(fieldErrors).some(Boolean)) {
+  //   return { fieldErrors, fields }
+  // }
 
-  let joke = await db.joke.create({ data: { ...fields, jokesterId: userId } })
-  return redirect(`/jokes/${joke.id}`)
+  // let joke = await db.joke.create({ data: { ...fields, jokesterId: userId } })
+  // return redirect(`/jokes/${joke.id}`)
 }
 
 export default function NewJokeRoute() {
