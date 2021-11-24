@@ -2,7 +2,7 @@
 
 ## The bug
 
-In the `/jokes/new` route, the only thing the `ActionFunction` is doing is throwing an error, which should be catched by the `ErrorBoundary` component in the same route. Instead, you should see a global app error, catched by the root `ErrorBoundary`. The error is:
+In the `/jokes/new` route, the only thing the `ActionFunction` is doing is throwing an error, which should be caught by the `ErrorBoundary` component in the same route. Instead, you should see a global app error, caught by the root `ErrorBoundary`. The error is:
 
 ```
 TypeError: Cannot read property 'user' of undefined
